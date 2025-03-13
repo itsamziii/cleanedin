@@ -24,7 +24,7 @@ export async function classifyConversations(
         results.push(...output);
     }
 
-    return results;
+    return results; 
 }
 
 export async function classifyBatch(
