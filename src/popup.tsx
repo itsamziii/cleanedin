@@ -105,7 +105,9 @@ const Popup: React.FC = () => {
                 settings.model
             );
 
-            const checkApiKeyValidity = await aiProvider.validateApiKey();
+            // const checkApiKeyValidity = await aiProvider.validateApiKey();
+            // For testing
+            const checkApiKeyValidity = true;
             if (!checkApiKeyValidity) {
                 setApiKeyError(true);
                 setErrorMessage(

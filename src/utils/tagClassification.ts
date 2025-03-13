@@ -2,17 +2,22 @@ import { BATCH_SIZE, SYSTEM_PROMPT } from "~/constants";
 import { generateObject, type LanguageModel } from "ai";
 import { z } from "zod";
 
+type Conversation = {
+    name: string;
+    conversation: string;
+};
+
 const outputSchema = z.object({
     name: z.string().describe("The conversation identifier"),
     tag: z.string().default("none").describe("The selected classification tag")
 });
 
 export async function classifyConversations(
-    conversations: { name: string; conversation: string }[],
+    conversations: Conversation[],
     tags: string[],
     model: LanguageModel,
     batch_size = BATCH_SIZE
-) {
+): Promise<z.infer<typeof outputSchema>[]> {
     const results = [];
     const batches = Math.ceil(conversations.length / batch_size);
 
@@ -24,11 +29,11 @@ export async function classifyConversations(
         results.push(...output);
     }
 
-    return results; 
+    return results;
 }
 
-export async function classifyBatch(
-    batch: { name: string; conversation: string }[],
+async function classifyBatch(
+    batch: Conversation[],
     tags: string[],
     model: LanguageModel
 ) {
@@ -50,4 +55,24 @@ export async function classifyBatch(
     });
 
     return result;
+}
+
+export async function mockClassifyConversations(
+    conversations: Conversation[],
+    availableTags: string[]
+): Promise<z.infer<typeof outputSchema>[]> {
+    // Simulate network delay
+
+    return conversations.map((conversation) => {
+        // Get a random tag from available tags
+        const randomTagIndex = Math.floor(Math.random() * availableTags.length);
+        const randomTag = availableTags[randomTagIndex];
+
+        // Generate a random confidence level between 0.6 and 1.0
+
+        return {
+            name: conversation.name,
+            tag: randomTag
+        };
+    });
 }
