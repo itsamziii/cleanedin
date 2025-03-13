@@ -1,14 +1,16 @@
 import { CleaningServices } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import Alert from "@mui/material/Alert";
-import { SETTINGS_STORAGE_KEY } from "~/constants";
+import {
+    SETTINGS_STORAGE_KEY,
+    TAGGED_CONVERSATIONS_STORAGE_KEY
+} from "~/constants";
 import { useChromeStorage } from "~/hooks/useChromeStorage";
 import { AIProviderFactory } from "~/structures/AIProviderFactory";
 import type { Settings } from "~/types";
 import { scrapeLinkedinDMs } from "~/utils/scraper";
 import {
     classifyConversations,
-    mockClassifyConversations
 } from "~/utils/tagClassification";
 import React, { useState } from "react";
 
@@ -39,7 +41,6 @@ const Content = () => {
             );
 
             const result = await scrapeLinkedinDMs();
-            console.log("Scraped messages:", result);
 
             if (!result.length) {
                 setMessage(() => "No unread messages found to organize.");
@@ -52,22 +53,14 @@ const Content = () => {
                         .join(" ")
                 }));
 
-                // const taggedConversations = await classifyConversations(
-                //     conversations,
-                //     settings.tags.map((tag) => tag.name),
-                //     aiProvider.client
-                // );
-
-                // Mock the classifyConversations function
-                const taggedConversations = await mockClassifyConversations(
+                const taggedConversations = await classifyConversations(
                     conversations,
-                    settings.tags.map((tag) => tag.name)
+                    settings.tags.map((tag) => tag.name),
+                    aiProvider.client
                 );
 
-                console.log("Tagged conversations:", taggedConversations);
-
                 await chromeStorage.setKey(
-                    "taggedConversations",
+                    TAGGED_CONVERSATIONS_STORAGE_KEY,
                     taggedConversations
                 );
 
@@ -86,9 +79,6 @@ const Content = () => {
                             )
                         )
                         .map((conversation) => conversation.profileLink);
-
-                    // Remove spam connections now!
-                    console.log("Removing spam connections:", profileLinks);
                 }
 
                 setMessage(

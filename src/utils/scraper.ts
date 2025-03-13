@@ -5,7 +5,7 @@ type LinkedInMessage = {
     message: string;
 };
 
-type ScrapedResults = {
+export type ScrapedResults = {
     name: string;
     profileLink: string;
     messages: LinkedInMessage[];
@@ -30,21 +30,37 @@ function getLinkedInMessages(): LinkedInMessage[] {
     });
 }
 
-export async function scrapeLinkedinDMs(): Promise<ScrapedResults[]> {
-    const converstaionList = document.querySelectorAll<HTMLLIElement>(
+export function getConversationList({
+    unreadOnly = false
+}: { unreadOnly?: boolean } = {}): HTMLLIElement[] {
+    const conversationList = document.querySelectorAll<HTMLLIElement>(
         LinkedinSelectors.ConverstationList
     );
 
-    const unreadConversations = Array.from(converstaionList).filter((conv) =>
-        conv.querySelector(LinkedinSelectors.CheckUnread)
-    );
+    const allConversations = Array.from(conversationList);
+
+    if (unreadOnly) {
+        return allConversations.filter((conv) =>
+            conv.querySelector(LinkedinSelectors.CheckUnread)
+        );
+    }
+
+    return allConversations;
+}
+
+export async function scrapeLinkedinDMs({
+    unreadOnly = true
+}: { unreadOnly?: boolean } = {}): Promise<ScrapedResults[]> {
+    const conversationsToScrape = getConversationList({ unreadOnly });
 
     const result: ScrapedResults[] = [];
 
-    for (const conv of unreadConversations) {
+    for (const conv of conversationsToScrape) {
         const clickable = conv.querySelector<HTMLDivElement>(
             LinkedinSelectors.ConversationClickable
         );
+
+        if (!clickable) continue;
 
         clickable.click();
 
@@ -54,10 +70,11 @@ export async function scrapeLinkedinDMs(): Promise<ScrapedResults[]> {
             name:
                 conv
                     .querySelector(LinkedinSelectors.ConverserName)
-                    ?.textContent.trim() ?? "Unknown",
-            profileLink: document.querySelector<HTMLAnchorElement>(
-                LinkedinSelectors.ProfileLink
-            )?.href,
+                    ?.textContent?.trim() ?? "Unknown",
+            profileLink:
+                document.querySelector<HTMLAnchorElement>(
+                    LinkedinSelectors.ProfileLink
+                )?.href ?? "",
             messages: getLinkedInMessages()
         });
     }

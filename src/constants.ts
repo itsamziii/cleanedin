@@ -11,6 +11,8 @@ export const LinkedinSelectors = {
 
 export const SETTINGS_STORAGE_KEY = "cleanedinSettings";
 
+export const TAGGED_CONVERSATIONS_STORAGE_KEY = "taggedConversations";
+
 export const BATCH_SIZE = 5;
 
 // AI Generated Prompt

@@ -1,7 +1,13 @@
 import {
     Box,
+    Button,
     Container,
     createTheme,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
     Paper,
     ThemeProvider,
     Typography
@@ -33,6 +39,9 @@ const theme = createTheme({
         background: {
             default: "#f5f9ff",
             paper: "#ffffff"
+        },
+        error: {
+            main: "#f44336"
         }
     },
     typography: {
@@ -68,8 +77,10 @@ const Popup: React.FC = () => {
     );
     const [isSaved, setIsSaved] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
+    const [saveLoading, setSaveLoading] = useState<boolean>(false);
     const [apiKeyError, setApiKeyError] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string>("");
+    const [clearDialogOpen, setClearDialogOpen] = useState<boolean>(false);
 
     const chromeStorage = useChromeStorage();
 
@@ -96,6 +107,7 @@ const Popup: React.FC = () => {
 
     const saveSettings = async () => {
         try {
+            setSaveLoading(true);
             setApiKeyError(false);
             setErrorMessage("");
 
@@ -105,9 +117,7 @@ const Popup: React.FC = () => {
                 settings.model
             );
 
-            // const checkApiKeyValidity = await aiProvider.validateApiKey();
-            // For testing
-            const checkApiKeyValidity = true;
+            const checkApiKeyValidity = await aiProvider.validateApiKey();
             if (!checkApiKeyValidity) {
                 setApiKeyError(true);
                 setErrorMessage(
@@ -118,12 +128,14 @@ const Popup: React.FC = () => {
                 setIsSaved(true);
                 setTimeout(() => setIsSaved(false), 3000);
             }
+            setSaveLoading(false);
         } catch (error) {
             console.error("Error saving settings to Chrome storage:", error);
             setApiKeyError(true);
             setErrorMessage(
                 `Error: ${error instanceof Error ? error.message : "Unknown error occurred"}`
             );
+            setSaveLoading(false);
         }
     };
 
@@ -178,6 +190,22 @@ const Popup: React.FC = () => {
         setErrorMessage("");
     };
 
+    // Clear all local data
+    const handleClearData = async () => {
+        try {
+            await chrome.storage.local.clear();
+            // Reset to default settings
+            setSettings(defaultSettings);
+            setAvailableModels(modelOptions["OpenAI"]);
+        } catch (error) {
+            console.error("Error clearing data from Chrome storage:", error);
+            setApiKeyError(true);
+            setErrorMessage("Failed to clear data. Please try again.");
+        } finally {
+            setClearDialogOpen(false);
+        }
+    };
+
     // Render loading state
     if (isLoading) {
         return (
@@ -217,7 +245,7 @@ const Popup: React.FC = () => {
                 <Paper
                     elevation={3}
                     sx={{
-                        p: 3,
+                        p: 4,
                         borderRadius: 2,
                         height: "100%",
                         display: "flex",
@@ -253,14 +281,36 @@ const Popup: React.FC = () => {
                         onTagsChange={handleTagsChange}
                     />
 
-                    <AutoRemoveOption
+                    {/* <AutoRemoveOption
                         autoRemoveSpamConnections={
                             settings.autoRemoveSpamConnections
                         }
                         onChange={handleAutoRemoveChange}
-                    />
+                    /> */}
 
-                    <SaveButton isSaved={isSaved} onSave={saveSettings} />
+                    <Box
+                        sx={{
+                            mt: "auto",
+                            display: "flex",
+                            flexDirection: "column"
+                        }}
+                    >
+                        <SaveButton
+                            isSaved={isSaved}
+                            onSave={saveSettings}
+                            loading={saveLoading}
+                        />
+
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            size="small"
+                            onClick={() => setClearDialogOpen(true)}
+                            sx={{ mt: 1 }}
+                        >
+                            Clear All Data
+                        </Button>
+                    </Box>
                 </Paper>
 
                 <ErrorSnackbar
@@ -270,6 +320,37 @@ const Popup: React.FC = () => {
                     }
                     onClose={handleCloseError}
                 />
+
+                <Dialog
+                    open={clearDialogOpen}
+                    onClose={() => setClearDialogOpen(false)}
+                    PaperProps={{
+                        sx: {
+                            mb: 2
+                        }
+                    }}
+                >
+                    <DialogTitle>Clear All Data?</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            This will remove all your settings including API
+                            keys, cached tagged conversations and custom tags.
+                            This action cannot be undone.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setClearDialogOpen(false)}>
+                            Cancel
+                        </Button>
+                        <Button
+                            onClick={handleClearData}
+                            color="error"
+                            autoFocus
+                        >
+                            Clear Data
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Box>
         </ThemeProvider>
     );
