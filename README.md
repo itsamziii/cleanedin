@@ -2,6 +2,8 @@
 
 A Chrome extension that prioritizes and organizes LinkedIn messages based on content analysis.
 
+![CleanedIn Extension](assets/cleanedin.jpg)
+
 ## Features
 
 -   Automatically categorize unread LinkedIn messages with custom tags
@@ -47,9 +49,10 @@ pnpm dev
 ```
 
 This will:
-- Start a local development server
-- Watch for file changes and rebuild automatically
-- Apply changes to the extension without needing to reload it manually
+
+-   Start a local development server
+-   Watch for file changes and rebuild automatically
+-   Apply changes to the extension without needing to reload it manually
 
 ### Other Commands
 
