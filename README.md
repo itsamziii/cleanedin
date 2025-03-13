@@ -1,33 +1,58 @@
-This is a [Plasmo extension](https://docs.plasmo.com/) project bootstrapped with [`plasmo init`](https://www.npmjs.com/package/plasmo).
+# CleanedIn
 
-## Getting Started
+A Chrome extension that prioritizes and organizes LinkedIn messages based on content analysis.
 
-First, run the development server:
+## Features
 
-```bash
-pnpm dev
-# or
-npm run dev
+-   Automatically categorize unread LinkedIn messages with custom tags
+-   Simple, clean user interface
+-   Efficient message scanning through the browser extension
+
+## Installation
+
+1. Clone the repository
+2. Install dependencies:
+
+```sh
+pnpm install
 ```
 
-Open your browser and load the appropriate development build. For example, if you are developing for the chrome browser, using manifest v3, use: `build/chrome-mv3-dev`.
+3. Build the extension (production):
 
-You can start editing the popup by modifying `popup.tsx`. It should auto-update as you make changes. To add an options page, simply add a `options.tsx` file to the root of the project, with a react component default exported. Likewise to add a content page, add a `content.ts` file to the root of the project, importing some module and do some logic, then reload the extension on your browser.
-
-For further guidance, [visit our Documentation](https://docs.plasmo.com/)
-
-## Making production build
-
-Run the following:
-
-```bash
+```sh
 pnpm build
-# or
-npm run build
 ```
 
-This should create a production bundle for your extension, ready to be zipped and published to the stores.
+4. Load the extension in Chrome:
+    - Open Chrome and navigate to `chrome://extensions/`
+    - Enable "Developer mode"
+    - Click "Load unpacked" and select the `build/chrome-mv3-prod` folder
 
-## Submit to the webstores
+## Usage
 
-The easiest way to deploy your Plasmo extension is to use the built-in [bpp](https://bpp.browser.market) GitHub action. Prior to using this action however, make sure to build your extension and upload the first version to the store to establish the basic credentials. Then, simply follow [this setup instruction](https://docs.plasmo.com/framework/workflows/submit) and you should be on your way for automated submission!
+1. Open LinkedIn messaging page
+2. Click on the CleanedIn extension icon
+3. Add custom tags for message categorization
+4. Click "Start Organizing" to begin the process
+5. View your messages organized by the categories you defined
+
+## Development
+
+### Development Server
+
+To start the development server with hot reloading:
+
+```sh
+pnpm dev
+```
+
+This will:
+- Start a local development server
+- Watch for file changes and rebuild automatically
+- Apply changes to the extension without needing to reload it manually
+
+### Other Commands
+
+-   `pnpm build` - Build the extension for production
+-   `pnpm lint` - Check TypeScript code
+-   `pnpm prettier` - Format source code
