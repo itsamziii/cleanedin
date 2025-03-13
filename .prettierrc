@@ -1,0 +1,9 @@
+{
+    "printWidth": 80,
+    "tabWidth": 4,
+    "semi": true,
+    "singleQuote": false,
+    "endOfLine": "auto",
+    "trailingComma": "none",
+    "plugins": ["@ianvs/prettier-plugin-sort-imports"]
+}
