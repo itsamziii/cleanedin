@@ -2,7 +2,7 @@ export const useChromeStorage = () => {
     return {
         setKey: async <T>(key: string, value: T) => {
             return new Promise<void>((resolve) => {
-                chrome.storage.local.set({ [key]: value }, () => resolve);
+                chrome.storage.local.set({ [key]: value }, () => resolve());
             });
         },
 
