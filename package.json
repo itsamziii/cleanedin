@@ -8,7 +8,8 @@
         "dev": "plasmo dev",
         "build": "plasmo build",
         "package": "plasmo package",
-        "format": "prettier --write ."
+        "format": "prettier --write .",
+        "lint": "tsc --noEmit && prettier --check ."
     },
     "dependencies": {
         "@ai-sdk/anthropic": "^1.1.16",
