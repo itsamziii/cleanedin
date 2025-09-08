@@ -1,6 +1,6 @@
 # CleanedIn
 
-A Chrome extension that prioritizes and organizes LinkedIn messages based on content analysis.
+A Chrome extension that prioritizes and organizes LinkedIn messages based on content analysis. (Might have build issues now)
 
 ![CleanedIn Extension](assets/cleanedin.jpg)
 
